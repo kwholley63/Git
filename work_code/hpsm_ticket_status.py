@@ -16,6 +16,7 @@ P4 = 0
 breach = 0
 warning = 0
 premier_count = 0
+resolved = 0
 #
 with open ('H:\\python code\\csv_test_file.csv','rt') as csvfile:                                    # Have to format the ticket column to be a number
     with open ('H:\\python code\\csv_test_file1.csv','w') as csv_test_file1:                         
@@ -27,7 +28,7 @@ with open ('H:\\python code\\csv_test_file.csv','rt') as csvfile:               
             break;
         for row in readablefile:
             date_format = datetime.datetime.strptime(row[2], '%m/%d/%Y %H:%M')
-            if row[8] == "P2":
+            if row[8] == "P2" and row[3] != "Resolved":
                 P2 = P2 +1
                 ticket = int(row[0])
                 severity = str(row[8])
@@ -47,7 +48,7 @@ with open ('H:\\python code\\csv_test_file.csv','rt') as csvfile:               
                 tkt=(ticket)
                 lst=(ticket, severity, open_time, breach_time, breach_state, premier)
                 writablefile.writerow(lst)
-            elif row[8] == "P3":
+            elif row[8] == "P3" and row[3] != "Resolved":
                 P3 = P3 +1
                 ticket = int(row[0])
                 severity = str(row[8])
@@ -66,7 +67,7 @@ with open ('H:\\python code\\csv_test_file.csv','rt') as csvfile:               
                 breach_time = (str(date_format + timedelta(hours=24)))
                 lst=(ticket, severity, open_time, breach_time, breach_state, premier)
                 writablefile.writerow(lst)
-            elif row[8] == "P4":
+            elif row[8] == "P4" and row[3] != "Resolved":
                 P4 = P4 +1
                 ticket = int(row[0])
                 severity = str(row[8])
@@ -85,6 +86,7 @@ with open ('H:\\python code\\csv_test_file.csv','rt') as csvfile:               
                 breach_time = (str(date_format + timedelta(hours=120)))
                 lst=(ticket, severity, open_time, breach_time, breach_state, premier)
                 writablefile.writerow(lst)
+            resolved = resolved +1
 #
 # Sort the data and produce The final file
 #
@@ -101,8 +103,10 @@ with open ('H:\\python code\\csv_test_file.csv','rt') as csvfile:               
     f.close()
 #
 csv_test_file1.close()
-print("The number of P2 P3 and P4 tickets", P2, P3, P4)
+print("The total of open tickets is",P2+P3+P4)
+print("The number of P2 P3 and P4 tickets", P2,P3,P4)
 print("The number of breached tickets is", breach)
 print("The number of warning tickets is", warning)
+print("The number of resolved tickets is", resolved)
 print("The number of premier tickets is", premier_count)
 print("COMPLETE .... Your File is ready H:\\python code\\csv_test_file2.csv ")

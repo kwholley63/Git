@@ -21,7 +21,9 @@ Acknowledged = 0
 D1MSTTECHOPS = 0
 D1MSTTECHOPSAUTO = 0
 jpmc = 0
+critical = 0
 ticket_list = []
+ticket_list1 = []
 #
 with open ('H:\\python code\\hpsm_file.csv','rt') as hpsm_file:                                    # Have to format the ticket column to be a number
     with open ('H:\\python code\\hpsm_file1.csv','w') as hpsm_file1:                         
@@ -63,7 +65,15 @@ with open ('H:\\python code\\hpsm_file.csv','rt') as hpsm_file:                 
                         hold = "TRUE"
                         hold_count = hold_count +1
                         ticket_list.append(row[0])
-                    #
+                ###
+                if description.find("time critical") == -1:
+                    time_critical = " "
+                else:
+                    time_critical = "YES"
+                    critical = critical +1
+                    #critical_list.append(row[5])
+                    ticket_list1.append(row[0])
+                ###
                 if breach_state == "Breached":
                     breach = breach +1
                 if breach_state == "Warning":
@@ -73,10 +83,14 @@ with open ('H:\\python code\\hpsm_file.csv','rt') as hpsm_file:                 
                 name = description.find("Splunk Alert:30159_Alert_SM2_OPSMON_High_Priority_Alerts") #== -1
                 if name != -1:
                     alert_name = (description[name:100])
-                    lst=(ticket, severity, open_time, breach_time, breach_state, premier, assignee_name,queue_name,alert_name )
+                    #lst=(ticket, severity, open_time, breach_time, breach_state, premier, assignee_name,queue_name,alert_name )
+                    #
+                    lst=(ticket, severity, open_time, breach_time, breach_state, premier, assignee_name,queue_name,description,time_critical )
                     writablefile.writerow(lst)
                 else:
-                    lst=(ticket, severity, open_time, breach_time, breach_state, premier, assignee_name,queue_name )
+                    #lst=(ticket, severity, open_time, breach_time, breach_state, premier, assignee_name,queue_name,alert_name )
+                    #
+                    lst=(ticket, severity, open_time, breach_time, breach_state, premier, assignee_name,queue_name,description,time_critical )
                     writablefile.writerow(lst)
             elif row[8] == "P3" and row[3] != "Resolved":
                 P3 = P3 +1
@@ -108,7 +122,15 @@ with open ('H:\\python code\\hpsm_file.csv','rt') as hpsm_file:                 
                         hold = "TRUE"
                         hold_count = hold_count +1
                         ticket_list.append(row[0])
-                #
+                ###
+                if description.find("time critical") == -1:
+                    time_critical = " "
+                else:
+                    time_critical = "YES"
+                    critical = critical +1
+                    #critical_list.append(row[5])
+                    ticket_list1.append(row[0])
+                ###
                 if breach_state == "Breached":
                     breach = breach +1
                 if breach_state == "Warning":
@@ -118,10 +140,14 @@ with open ('H:\\python code\\hpsm_file.csv','rt') as hpsm_file:                 
                 name = description.find("Splunk Alert:30159_Alert_SM2_OPSMON_High_Priority_Alerts") #== -1
                 if name != -1:
                     alert_name = (description[name:100])
-                    lst=(ticket, severity, open_time, breach_time, breach_state, premier, assignee_name,queue_name,alert_name )
+                    #lst=(ticket, severity, open_time, breach_time, breach_state, premier, assignee_name,queue_name,alert_name )
+                    #
+                    lst=(ticket, severity, open_time, breach_time, breach_state, premier, assignee_name,queue_name,description,time_critical )
                     writablefile.writerow(lst)
                 else:
-                    lst=(ticket, severity, open_time, breach_time, breach_state, premier, assignee_name,queue_name)
+                    #lst=(ticket, severity, open_time, breach_time, breach_state, premier, assignee_name,queue_name,alert_name )
+                    #
+                    lst=(ticket, severity, open_time, breach_time, breach_state, premier, assignee_name,queue_name,description,time_critical )
                     writablefile.writerow(lst)
             elif row[8] == "P4" and row[3] != "Resolved":
                 P4 = P4 +1
@@ -153,7 +179,15 @@ with open ('H:\\python code\\hpsm_file.csv','rt') as hpsm_file:                 
                         hold = "TRUE"
                         hold_count = hold_count +1
                         ticket_list.append(row[0])
-                    #
+                ####
+                if description.find("time critical") == -1:
+                    time_critical = " "
+                else:
+                    time_critical = "YES"
+                    critical = critical +1
+                    #critical_list.append(row[5])
+                    ticket_list1.append(row[0])
+                ####    
                 if breach_state == "Breached":
                     breach = breach +1
                 if breach_state == "Warning":
@@ -163,10 +197,14 @@ with open ('H:\\python code\\hpsm_file.csv','rt') as hpsm_file:                 
                 name = description.find("Splunk Alert:30159_Alert_SM2_OPSMON_High_Priority_Alerts") #== -1
                 if name != -1:
                     alert_name = (description[name:100])
-                    lst=(ticket, severity, open_time, breach_time, breach_state, premier, assignee_name,queue_name,alert_name)
+                    #lst=(ticket, severity, open_time, breach_time, breach_state, premier, assignee_name,queue_name,alert_name )
+                    #
+                    lst=(ticket, severity, open_time, breach_time, breach_state, premier, assignee_name,queue_name,description,time_critical )
                     writablefile.writerow(lst)
                 else:
-                    lst=(ticket, severity, open_time, breach_time, breach_state, premier, assignee_name,queue_name)
+                    #lst=(ticket, severity, open_time, breach_time, breach_state, premier, assignee_name,queue_name,alert_name )
+                    #
+                    lst=(ticket, severity, open_time, breach_time, breach_state, premier, assignee_name,queue_name,description,time_critical )
                     writablefile.writerow(lst)
                 ##writablefile.writerow(lst)
             ##
@@ -189,7 +227,7 @@ with open ('H:\\python code\\hpsm_file.csv','rt') as hpsm_file:                 
     sortedlist = sorted(data, key=operator.itemgetter(3))                                   # 3 specifies according to fourth column we want to sort. Breach Time
                                                                                             # now write the sorte result into new CSV file
     with open("H:\\python code\\hpsm_file2.csv", "wb") as f:
-        f.write("ticket,severity,open_time,breach_time,breach_state,premier,assignee_name,queue_name,alert_name,assigned_to,status"+"\n")       # Put the header records back in the final file
+        f.write("ticket,severity,open_time,breach_time,breach_state,premier,assignee_name,queue_name,description,time_critical,assigned_to,status"+"\n")       # Put the header records back in the final file
         fileWriter = csv.writer(f, delimiter=',')
         for row in sortedlist:
             fileWriter.writerow(row)
@@ -202,7 +240,7 @@ with open ('H:\\python code\\hpsm_file.csv','rt') as hpsm_file:                 
 with open ('H:\\python code\\daily_stats.csv','a') as stats_file:
     now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     total=P2+P3+P4
-    stats_lst = (now,P2,P3,P4,total)
+    stats_lst = (now,P2,P3,P4,breach,warning,premier_count,total)
     writablefile = csv.writer(stats_file)
     writablefile.writerow(stats_lst)
     stats_file.close()
@@ -234,6 +272,10 @@ print ("The number of tickets in D1MSTECHOPSAUTO queue is >> ", D1MSTTECHOPSAUTO
 print ("The number of tickets with hold description, this is a potential ITSM & HPSM Conflict >> " ,hold_count)
 print("\n")
 print(ticket_list)
+print("\n")
+print ("The number of tickets with time_critical description >> " ,critical)
+print("\n")
+print(ticket_list1)
 print("\n")
 print("COMPLETE .... Your File is ready H:\\python code\\csv_test_file2.csv ")
 print("COMPLETE .... Your Stats File is ready H:\\python code\\daily_stats.csv ")

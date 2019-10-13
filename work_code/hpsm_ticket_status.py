@@ -1,9 +1,10 @@
 import csv
 import datetime
-import binascii
-from datetime import timedelta
+##import binascii
+from datetime import date, timedelta
+##from datetime import timedelta
 import sys ,operator
-import collections
+##import collections
 #
 # Have to still format the number column work on this fix. For now format the number cells when done running the tool
 #
@@ -22,6 +23,7 @@ D1MSTTECHOPS = 0
 D1MSTTECHOPSAUTO = 0
 jpmc = 0
 critical = 0
+counter = 0 
 ticket_list = []
 ticket_list1 = []
 #
@@ -66,7 +68,7 @@ with open ('H:\\python code\\hpsm_file.csv','rt') as hpsm_file:                 
                         hold_count = hold_count +1
                         ticket_list.append(row[0])
                 ###
-                if description.find("time critical") == -1:
+                if description.find("time critical") or ("TIME CRITICAL") == -1:
                     time_critical = " "
                 else:
                     time_critical = "YES"
@@ -235,16 +237,42 @@ with open ('H:\\python code\\hpsm_file.csv','rt') as hpsm_file:                 
     hpsm_file1.close()
     f.close()
 #
+##
+with open ('H:\\python code\\hpsm_file.csv','rt') as hpsm_file:
+    readablefile = csv.reader(hpsm_file)
+    for row in readablefile:                                                                     # This loop is to skip over the header record
+            print("\n")
+            break;
+    for row in readablefile:
+        check = str(row[1])
+        check_date = (check[0:9])
+        yesterday = (date.today() + timedelta(-1))
+        new_date = yesterday.strftime('X%m/X%d/%Y').replace('X0','X').replace('X','')
+        #print(new_date)
+        check_date = (check[0:10])
+        #print(check_date)
+        if new_date == check_date:
+            #print("TRUE")
+            counter = counter +1
+            
+            #print(counter)
+            #print(str(row[0]))
+        #else:
+    hpsm_file.close()
+##
 #Update the daily stats file
 #
 with open ('H:\\python code\\daily_stats.csv','a') as stats_file:
     now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     total=P2+P3+P4
-    stats_lst = (now,P2,P3,P4,breach,warning,premier_count,total)
+    stats_lst = (now,P2,P3,P4,breach,warning,premier_count,total,counter)
     writablefile = csv.writer(stats_file)
     writablefile.writerow(stats_lst)
     stats_file.close()
+ 
+
 #
+print("The total tickets opened yesterday is >> ",counter)
 print("The total of open tickets is >> ",P2+P3+P4)
 #print("\n")
 print("The number of P2 tickets >> ",P2)

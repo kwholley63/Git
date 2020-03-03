@@ -1,0 +1,384 @@
+import csv
+import datetime
+import operator
+from datetime import date, timedelta
+
+##import collections
+#
+# Have to still format the number column work on this fix. For now format the number cells when done running the tool
+#
+P2 = 0
+P3 = 0
+P4 = 0
+breach = 0
+warning = 0
+premier_count = 0
+hold_count = 0
+resolved = 0
+closed = 0
+transferred = 0
+Acknowledged = 0
+D1MSTTECHOPS = 0
+D1MSTTECHOPSAUTO = 0
+jpmc = 0
+critical = 0
+p2_ack_total = 0
+p3_ack_total = 0
+p4_ack_total = 0
+ack_totals = 0
+ack_percent = 0
+counter = 0
+ticket_list = []
+ticket_list1 = []
+
+"""
+Open the file for read. This is the extrat file from the reporting tool as a csv file
+The number column needs to be formatted to a number and saved as hpsm_file
+The first loop is to skip over the header record of the file. The same steps
+will be done to check the ticket type at location row[8]
+"""
+
+hpsm_file_path = "H:\\python code\\hpsm_file.csv"
+hpsm_file1_path = "H:\\python code\\hpsm_file1.csv"
+hpsm_file2_path = "H:\\python code\\hpsm_file2.csv"
+daily_stats_file_path = "H:\\python code\\daily_stats.csv"
+
+with open (hpsm_file_path,'r') as hpsm_file:
+    with open (hpsm_file1_path,'w', newline='') as hpsm_file1:
+        ##
+        ##print("here we are")
+        readablefile = csv.reader(hpsm_file)
+        writablefile = csv.writer(hpsm_file1)
+        ##hpsm_file1.write("ticket,severity,open_time,breach_time,breach_state,premier,assignee_name,assigned_to,status,alert_name,queue_name"+"\n")
+        for row in readablefile:
+            print("\n")
+            break
+        for row in readablefile:
+            ##print(row)
+            date_format = datetime.datetime.strptime(row[2], '%m/%d/%Y %H:%M')
+            if row[8] == "P2" and row[3] != "Resolved":
+                ##print("This is test 1")
+                P2 = P2 +1
+                assignee_name = str(row[9])
+                ticket = int(row[0])
+                severity = str(row[8])
+                open_time = str(row[1])
+                breach_state = str(row[7])
+                description = str(row[5])
+                queue_name = str(row[6])
+                """
+                We find the queue name and for the word premier in the title
+                we will count the number of instances of each. The check for hold
+                is to try and trap any tickets that request control-m jobs to be held
+                this would need an ITSM not an hpsm ticket and the ticket should be closed.
+                """
+                if queue_name == str(row[6]) == "D1MSTTECHOPS":
+                    D1MSTTECHOPS = D1MSTTECHOPS +1
+                else:
+                    D1MSTTECHOPSAUTO = D1MSTTECHOPSAUTO +1
+                if description.find("PREMIER") == -1:
+                    premier = " "
+                else:
+                    premier = "TRUE"
+                    #print(queue_name)
+                    premier_count = premier_count +1
+                if description.find("hold") == -1:
+                    hold = " "
+                else:
+                    #
+                    if queue_name == "D1MSTTECHOPSAUTO":
+                        hold = " "
+                    else:
+                        hold = "TRUE"
+                        hold_count = hold_count +1
+                        ticket_list.append(row[0])
+                """
+                This check is dead, does not work and does nothing. Need to spend some time on this.
+                The intent is to trap time critical tickets that need immediate attention, usually end point rejects.
+                """
+                if description.find("time critical") or "TIME CRITICAL" == -1:
+                    time_critical = " "
+                else:
+                    time_critical = "YES"
+                    critical = critical +1
+                    #critical_list.append(row[5])
+                    ticket_list1.append(row[0])
+                """
+                This is how we capture the ticket state; breached or warning
+                We also calculate based of  when the ticket is open and when it will breach.
+                """
+                if breach_state == "Breached":
+                    breach = breach +1
+                if breach_state == "Warning":
+                    warning = warning +1
+                breach_time = (str(date_format + timedelta(hours=8)))
+                lst=(ticket, severity, open_time, breach_time, breach_state, premier, assignee_name,queue_name,description,time_critical )
+                writablefile.writerow(lst)
+            elif row[8] == "P3" and row[3] != "Resolved":
+                P3 = P3 +1
+                assignee_name = str(row[9])
+                ticket = int(row[0])
+                severity = str(row[8])
+                open_time = str(row[1])
+                breach_state = str(row[7])
+                description = str(row[5])
+                queue_name = str(row[6])
+                if queue_name == str(row[6]) == "D1MSTTECHOPS":
+                    D1MSTTECHOPS = D1MSTTECHOPS +1
+                else:
+                    D1MSTTECHOPSAUTO = D1MSTTECHOPSAUTO +1
+                if description.find("PREMIER") == -1:
+                    premier = " "
+                else:
+                    premier = "TRUE"
+                    #print(queue_name)
+                    premier_count = premier_count +1
+                if description.find("hold") == -1:
+                    hold = " "
+                else:
+                    #
+                    if queue_name == "D1MSTTECHOPSAUTO":
+                        hold = " "
+                    else:
+                        hold = "TRUE"
+                        hold_count = hold_count +1
+                        ticket_list.append(row[0])
+                ###
+                if description.find("time critical") == -1:
+                    time_critical = " "
+                else:
+                    time_critical = "YES"
+                    critical = critical +1
+                    #critical_list.append(row[5])
+                    ticket_list1.append(row[0])
+                ###
+                if breach_state == "Breached":
+                    breach = breach +1
+                if breach_state == "Warning":
+                    warning = warning +1
+                breach_time = (str(date_format + timedelta(hours=24)))
+                tkt = ticket
+                lst=(ticket, severity, open_time, breach_time, breach_state, premier, assignee_name,queue_name,description,time_critical )
+                writablefile.writerow(lst)
+            elif row[8] == "P4" and row[3] != "Resolved":
+                P4 = P4 +1
+                assignee_name = str(row[9])
+                ticket = int(row[0])
+                severity = str(row[8])
+                open_time = str(row[1])
+                breach_state = str(row[7])
+                description = str(row[5])
+                queue_name = str(row[6])
+                if queue_name == str(row[6]) == "D1MSTTECHOPS":
+                    D1MSTTECHOPS = D1MSTTECHOPS +1
+                else:
+                    D1MSTTECHOPSAUTO = D1MSTTECHOPSAUTO +1
+                if description.find("PREMIER") == -1:
+                    premier = " "
+                else:
+                    premier = "TRUE"
+                    #print(queue_name)
+                    premier_count = premier_count +1
+                if description.find("hold") == -1:
+                    hold = " "
+                else:
+                    #
+                    if queue_name == "D1MSTTECHOPSAUTO":
+                        hold = " "
+                    else:
+                        hold = "TRUE"
+                        hold_count = hold_count +1
+                        ticket_list.append(row[0])
+                ####
+                if description.find("time critical") == -1:
+                    time_critical = " "
+                else:
+                    time_critical = "YES"
+                    critical = critical +1
+                    #critical_list.append(row[5])
+                    ticket_list1.append(row[0])
+                ####
+                if breach_state == "Breached":
+                    breach = breach +1
+                if breach_state == "Warning":
+                    warning = warning +1
+                breach_time = (str(date_format + timedelta(hours=120)))
+                tkt = ticket
+                lst=(ticket, severity, open_time, breach_time, breach_state, premier, assignee_name,queue_name,description,time_critical )
+                writablefile.writerow(lst)
+
+    # Sort the data and produce the final file
+    with open(hpsm_file1_path, 'r', newline='') as hpsm_file1:
+        data = csv.reader(hpsm_file1, delimiter=',')
+        # 3 specifies according to fourth column we want to sort. Breach Time
+        sortedlist = sorted(data, key=operator.itemgetter(3))
+
+        # now write the sorte result into new CSV file
+        with open(hpsm_file2_path, "w") as f:
+            f.write("ticket,severity,open_time,breach_time,breach_state,premier,assignee_name,queue_name,description,time_critical,assigned_to,status")       # Put the header records back in the final file
+            fileWriter = csv.writer(f, delimiter=',')
+            for row in sortedlist:
+                fileWriter.writerow(row)
+
+
+#################################################################
+#P2 Here
+#
+with open (hpsm_file_path,'rt') as hpsm_file:
+    readablefile = csv.reader(hpsm_file)
+    for row in readablefile:                                                                     # This loop is to skip over the header record
+        print("\n")
+        break
+    for row in readablefile:
+        check = str(row[1])                                                                      # Open Time
+        ##check_one = str(row[2])                                                                # Updated time
+        ticket = int(row[0])
+        s=str(check)                                                                             # get the date in open time
+        x=s.split(" ")                                                                           # split open time on the space
+        t=len(x)                                                                                 # get the length up to the space
+        key=x[0]                                                                                 # start at position 0 of the string
+        final_len=len(key)
+        check_date = (check[0:final_len])                                                        # this captures the date based of the length
+        yesterday = (date.today() + timedelta(-1))                                               # get the date from prior day
+        new_date = yesterday.strftime('X%m/X%d/%Y').replace('X0','X').replace('X','')            # converst yesterday to have 2 digits
+        if new_date == check_date:
+            counter = counter +1                                                                 # Tickets opened yesterday and increase our counter
+            ack_time = str(row[10])
+            open_time = str(row[1])
+            if row[8] == "P2":
+                fmt = '%m/%d/%Y %H:%M'
+                start_date = datetime.datetime.strptime(open_time, fmt)
+                #print("number - ack_time - start date", row[0] , ack_time, start_date)
+                if ack_time == "":
+                    #print("here field empty")
+                    ack_time = "01/01/2100  0:00" #if the field is empty put it way in the future to cause a fail
+                    ##
+                end_date = datetime.datetime.strptime(ack_time, fmt)
+                differ_time = end_date - start_date # difference in minutes from open to acknowledged
+                #print("The difference is ", differ_time)
+                p2_ack = float(7200) # of seconds in 2 hours
+                ##print(p2_ack)
+                minutes = timedelta.total_seconds(differ_time) / 60 #Convert to minutes
+                p2_ack = p2_ack / 60 #Defines the number of minutes for a P2
+                #print(minutes)
+                #print(p2_ack)
+                if minutes < p2_ack:
+                    ##print(row[0],"****************************************good")
+                    p2_ack_total = p2_ack_total + 1
+                    #print(p2_ack_total)
+                else:
+                    print("")
+                    ##print(row[0]," ***************************************BAD")
+            ###########################################################################
+            ##P3 HERE
+            #
+            if row[8] == "P3":
+                #p2_ack_total = p2_ack_total + 1
+                #print(p2_ack_total)
+                fmt = '%m/%d/%Y %H:%M'
+                start_date = datetime.datetime.strptime(open_time, fmt)
+                #print("number - ack_time - start date", row[0] , ack_time, start_date)
+                if ack_time == "":
+                    #print("here field empty")
+                    ack_time = "01/01/2100  0:00" #if the field is empty put it way in the future to cause a fail
+                    ##
+                end_date = datetime.datetime.strptime(ack_time, fmt)
+                differ_time = end_date - start_date # difference in minutes from open to acknowledged
+                #print("The difference is ", differ_time)
+                p3_ack = float(21600) # of seconds in 6 hours
+                #print(p2_ack)
+                minutes = timedelta.total_seconds(differ_time) / 60 #Convert to minutes
+                p3_ack = p3_ack / 60 #Defines the number of minutes for a P3
+                #print(minutes)
+                #print(p2_ack)
+                if minutes < p3_ack:
+                    ##print(row[0],"****************************************good")
+                    p3_ack_total = p3_ack_total + 1
+                    #print(p2_ack_total)
+                else:
+                    print("")
+                    ##print(row[0]," ***************************************BAD")
+            ###########################################################################
+            ##P4 HERE
+            #
+            if row[8] == "P4":
+                #p2_ack_total = p2_ack_total + 1
+                #print(p2_ack_total)
+                fmt = '%m/%d/%Y %H:%M'
+                start_date = datetime.datetime.strptime(open_time, fmt)
+                #print("number - ack_time - start date", row[0] , ack_time, start_date)
+                if ack_time == "":
+                    #print("here field empty")
+                    ack_time = "01/01/2100  0:00" #if the field is empty put it way in the future to cause a fail
+                    ##
+                end_date = datetime.datetime.strptime(ack_time, fmt)
+                differ_time = end_date - start_date # difference in minutes from open to acknowledged
+                #print("The difference is ", differ_time)
+                p4_ack = float(86400) # of seconds in 6 hours
+                #print(p2_ack)
+                minutes = timedelta.total_seconds(differ_time) / 60 #Convert to minutes
+                p4_ack = p4_ack / 60 #Defines the number of minutes for a P3
+                #print(minutes)
+                #print(p2_ack)
+                if minutes < p4_ack:
+                    ##print(row[0],"****************************************good")
+                    p4_ack_total = p4_ack_total + 1
+                    #print(p2_ack_total)
+                else:
+                    print("")
+                    ##print(row[0]," ***************************************BAD")
+hpsm_file.close()
+
+ack_totals = p2_ack_total+p3_ack_total+p4_ack_total
+ack_pct = float(ack_totals) / float(counter)
+##print(ack_totals, counter)
+#############################################################################################################################
+
+with open (hpsm_file_path,'rt') as hpsm_file:
+    readablefile = csv.reader(hpsm_file)
+    for row in readablefile:                                                                     # This loop is to skip over the header record a second time
+        print("\n")
+        break
+    for row in readablefile:
+        #check = str(row[1])                                                                     #Open Time
+        check = str(row[2])                                                                      #Updated time
+        #ticket = int(row[0])
+        s=str(check)
+        x=s.split(" ")
+        t=len(x)
+        key=x[0]
+        final_len=len(key)
+        check_date = (check[0:final_len])
+        yesterday = (date.today() + timedelta(-1))
+        new_date = yesterday.strftime('X%m/X%d/%Y').replace('X0','X').replace('X','')
+        if new_date == check_date and str(row[3]) ==  "Resolved" :
+            resolved = resolved +1                                                               #Tickets resolved yesterday
+
+    hpsm_file.close()
+
+    # calculate the percentage of tickets resolved from the previous 24 hours
+    ##print(resolved, counter)
+    percent = float(resolved) / float(counter)
+    ##print(percent)
+    percent_breached = float(breach) / float(counter)
+    ##print(breach, counter)
+    ##print(percent_breached)
+#
+#Update the daily stats file
+#
+with open (daily_stats_file_path, 'a') as stats_file:
+    now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    total=P2+P3+P4
+    stats_lst = (now,P2,P3,P4,breach,warning,premier_count,total,counter,resolved,percent,percent_breached,p2_ack_total,p3_ack_total,p4_ack_total,ack_totals,ack_pct)
+    writablefile = csv.writer(stats_file)
+    writablefile.writerow(stats_lst)
+    stats_file.close()
+
+"""
+Calculations are done with the following
+% of acknowledged tickets (total acknowledged tickets / tickets opened yesterday) column Q in stats file
+% of breached tickets ( total breached tickets / total open tickets yesterday) column L in stats file
+% of tickets resolved yesterday (total resolved tickets / tickets open yesterday) column k in stats file
+"""
+print("COMPLETE .... Your Stats File is ready H:\\python code\\daily_stats.csv ")
+

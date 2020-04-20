@@ -2,10 +2,14 @@ import csv
 import datetime
 import operator
 from datetime import date, timedelta
-
+import os
+import sys
+#
 ##import collections
 #
 # Have to still format the number column work on this fix. For now format the number cells when done running the tool
+#
+# Changes for Python V.3*
 #
 P2 = 0
 P3 = 0
@@ -37,12 +41,35 @@ The number column needs to be formatted to a number and saved as hpsm_file
 The first loop is to skip over the header record of the file. The same steps
 will be done to check the ticket type at location row[8]
 """
-
 hpsm_file_path = "H:\\python code\\hpsm_file.csv"
 hpsm_file1_path = "H:\\python code\\hpsm_file1.csv"
 hpsm_file2_path = "H:\\python code\\hpsm_file2.csv"
+dump_file_path = "H:\\python code\\dump_file.csv"
 daily_stats_file_path = "H:\\python code\\daily_stats.csv"
-
+#
+##
+def cleanup():
+  print("Cleaup old Files")
+  if os.path.isfile(hpsm_file_path):
+    os.remove(hpsm_file_path)
+  else:
+    print(" ")
+  if os.path.isfile(hpsm_file1_path):
+    os.remove(hpsm_file1_path)
+  else:
+    print(" ")
+  if os.path.isfile(hpsm_file2_path):
+    os.remove(hpsm_file2_path)
+  else:
+    print(" ")
+  if os.path.isfile(dump_file_path):
+    os.rename(dump_file_path, hpsm_file_path)
+  else:
+    print("file not found. Extract needs to be completed", dump_file_path)
+    sys.exit(1)
+cleanup()
+##
+#
 with open (hpsm_file_path,'r') as hpsm_file:
     with open (hpsm_file1_path,'w', newline='') as hpsm_file1:
         ##
@@ -55,7 +82,7 @@ with open (hpsm_file_path,'r') as hpsm_file:
             break
         for row in readablefile:
             ##print(row)
-            date_format = datetime.datetime.strptime(row[2], '%m/%d/%Y %H:%M')
+            date_format = datetime.datetime.strptime(row[1], '%m/%d/%Y %H:%M')
             if row[8] == "P2" and row[3] != "Resolved":
                 ##print("This is test 1")
                 P2 = P2 +1
@@ -174,7 +201,7 @@ with open (hpsm_file_path,'r') as hpsm_file:
                 else:
                     D1MSTTECHOPSAUTO = D1MSTTECHOPSAUTO +1
                 if description.find("PREMIER") == -1:
-                    premier = " "
+                   premier = " "
                 else:
                     premier = "TRUE"
                     #print(queue_name)
@@ -189,7 +216,7 @@ with open (hpsm_file_path,'r') as hpsm_file:
                         hold = "TRUE"
                         hold_count = hold_count +1
                         ticket_list.append(row[0])
-                ####
+               ####
                 if description.find("time critical") == -1:
                     time_critical = " "
                 else:
@@ -208,10 +235,17 @@ with open (hpsm_file_path,'r') as hpsm_file:
                 writablefile.writerow(lst)
 
     # Sort the data and produce the final file
+    # try with commenting this open out
     with open(hpsm_file1_path, 'r', newline='') as hpsm_file1:
         data = csv.reader(hpsm_file1, delimiter=',')
         # 3 specifies according to fourth column we want to sort. Breach Time
         sortedlist = sorted(data, key=operator.itemgetter(3))
+
+
+## Try this uncomment
+##hpsm_file.close()
+##hpsm_file1.close()
+##
 
         # now write the sorte result into new CSV file
         with open(hpsm_file2_path, "w") as f:
@@ -220,7 +254,8 @@ with open (hpsm_file_path,'r') as hpsm_file:
             for row in sortedlist:
                 fileWriter.writerow(row)
 
-
+## Try this uncomment
+# f.close()
 #################################################################
 #P2 Here
 #
@@ -290,7 +325,7 @@ with open (hpsm_file_path,'rt') as hpsm_file:
                 minutes = timedelta.total_seconds(differ_time) / 60 #Convert to minutes
                 p3_ack = p3_ack / 60 #Defines the number of minutes for a P3
                 #print(minutes)
-                #print(p2_ack)
+               #print(p2_ack)
                 if minutes < p3_ack:
                     ##print(row[0],"****************************************good")
                     p3_ack_total = p3_ack_total + 1
@@ -381,4 +416,3 @@ Calculations are done with the following
 % of tickets resolved yesterday (total resolved tickets / tickets open yesterday) column k in stats file
 """
 print("COMPLETE .... Your Stats File is ready H:\\python code\\daily_stats.csv ")
-

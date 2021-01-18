@@ -39,7 +39,7 @@ tickets_path = "K:\\tickets.csv"
  
 dump_file_path = "K:\\dump_file.csv"
 daily_stats_file_path = "K:\\daily_stats.csv"
-totals_file_path = "K:\\totals_file.csv"
+totals_file_path = "K:\\total_file.csv"
 
 def cleanup():
   print("Cleaup old Files")
@@ -72,7 +72,7 @@ with open (snow_file_path,'r') as snow_file:
     with open (tickets_path,'w', newline='') as tickets:
         readablefile = csv.reader(snow_file)
         writablefile = csv.writer(tickets) 
-        tickets.write("ticket, hpsm_ticket,P_Type, breach_time, assigned to, impact, priority, created on, description"+"\n")
+        tickets.write("ticket, hpsm_ticket,P_Type, breach_time, assigned to, impact, priority, created on, description, Priority, Status"+"\n")
         for row in readablefile:
             print("\n")
             break

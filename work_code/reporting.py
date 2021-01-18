@@ -186,3 +186,4 @@ with open (totals_file_path, 'a') as totals_file:
 print(opened_yesterday, "Were opened Yesterday")
 print(resolved_yesterday, "Were Resolved yesterday")
 print(percent_resolved, "of the tickets opened yesterday were resolved yesterday")
+#added 1/18/2021

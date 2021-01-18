@@ -29,25 +29,37 @@ p4_ack_total = 0
 ack_totals = 0
 ack_percent = 0
 counter = 0
-p1_sla_met = 0
+p1_sla_met = 1
 p1_sla_miss = 1
-p2_sla_met = 0
-p2_sla_miss = 0
-p3_sla_met = 0
-p3_sla_miss = 0
-p4_sla_met = 0
-p4_sla_miss = 0
+p2_sla_met = 1
+p2_sla_miss = 1
+p3_sla_met = 1
+p3_sla_miss = 1
+p4_sla_met = 1
+p4_sla_miss = 1
 
-p1_totals = 0
-p2_totals = 0
-p3_totals = 0
-p4_totals = 0
+p1_totals = 1
+p2_totals = 1
+p3_totals = 1
+p4_totals = 1
 
 
 opened_yesterday = 0
 resolved_yesterday = 0
 ticket_list = []
 
+"""
+
+If the field resolved= str(row[17]) is blank I populate it "1/01/2050 2:58"
+This is to prevent the date calculation from failing on a blank field. This 
+will marginally inflate the met SLA statistics at the start of the month
+
+
+We have commented out any P1 calculation. These are not real P1 ticket but more elevated
+P2 tickets. They were called P1 in thr original HPSM > SNOW mapping of tickets.
+The code will be adjusted to change these to P2
+
+"""
 
 snow_file_path = "K:\\snow_file.csv"
 #snow_file1_path = "K:\\snow_file1_new.csv"
@@ -69,7 +81,18 @@ else:
   #print(type(val))
   
 #print(val)
+######
 
+def cleanup():
+  print("Cleaup old Files")
+  if os.path.isfile(sla_file_details_path):
+    os.remove(sla_file_details_path)
+  else:
+    print("file not found. Extract needs to be completed", dump_file_path)
+    sys.exit(1)
+cleanup()
+
+######
 
 def Ticket_SLA():
   print("calling ticket SLA")
@@ -132,7 +155,7 @@ with open (snow_file_path,'r') as snow_file:
               #print("the orig resolve time is " ,ticket, resolve_time)
               new_breach_time = datetime.strptime(breach_time, '%Y-%m-%d %H:%M:%S').strftime("%#m/%d/%Y %H:%M")
               resolve_time = datetime.strptime(resolve_time, '%m/%d/%Y %H:%M')
-              new_resolve_time = datetime.strftime(resolve_time, '%m/%d/%Y %H:%M')
+              new_resolve_time = datetime.strftime(resolve_time, '%#m/%d/%Y %H:%M')
               #print("the orig resolve time is " , resolve_time)
               #print("The new resolved time is", new_resolve_time)
               #print("the new breached time is", new_breach_time)
@@ -173,7 +196,8 @@ with open (snow_file_path,'r') as snow_file:
               #print("the orig resolve time is " ,ticket, resolve_time)
               new_breach_time = datetime.strptime(breach_time, '%Y-%m-%d %H:%M:%S').strftime("%#m/%d/%Y %H:%M")
               resolve_time = datetime.strptime(resolve_time, '%m/%d/%Y %H:%M')
-              new_resolve_time = datetime.strftime(resolve_time, '%m/%d/%Y %H:%M')
+              new_resolve_time = datetime.strftime(resolve_time, '%#m/%d/%Y %H:%M')
+              #print("The ticket is",ticket)
               #print("the orig resolve time is " , resolve_time)
               #print("The new resolved time is", new_resolve_time)
               #print("the new breached time is", new_breach_time)
@@ -214,7 +238,7 @@ with open (snow_file_path,'r') as snow_file:
               #print("the orig resolve time is " ,ticket, resolve_time)
               new_breach_time = datetime.strptime(breach_time, '%Y-%m-%d %H:%M:%S').strftime("%#m/%d/%Y %H:%M")
               resolve_time = datetime.strptime(resolve_time, '%m/%d/%Y %H:%M')
-              new_resolve_time = datetime.strftime(resolve_time, '%m/%d/%Y %H:%M')
+              new_resolve_time = datetime.strftime(resolve_time, '%#m/%d/%Y %H:%M')
               #print("the orig resolve time is " , resolve_time)
               #print("The new resolved time is", new_resolve_time)
               #print("the new breached time is", new_breach_time)
@@ -256,7 +280,7 @@ with open (snow_file_path,'r') as snow_file:
               #print("the orig resolve time is " ,ticket, resolve_time)
               new_breach_time = datetime.strptime(breach_time, '%Y-%m-%d %H:%M:%S').strftime("%#m/%d/%Y %H:%M")
               resolve_time = datetime.strptime(resolve_time, '%m/%d/%Y %H:%M')
-              new_resolve_time = datetime.strftime(resolve_time, '%m/%d/%Y %H:%M')
+              new_resolve_time = datetime.strftime(resolve_time, '%#m/%d/%Y %H:%M')
               #print("the orig resolve time is " , resolve_time)
               #print("The new resolved time is", new_resolve_time)
               #print("the new breached time is", new_breach_time)
@@ -297,7 +321,7 @@ with open (snow_file_path,'r') as snow_file:
               #print("the orig resolve time is " ,ticket, resolve_time)
               new_breach_time = datetime.strptime(breach_time, '%Y-%m-%d %H:%M:%S').strftime("%#m/%d/%Y %H:%M")
               resolve_time = datetime.strptime(resolve_time, '%m/%d/%Y %H:%M')
-              new_resolve_time = datetime.strftime(resolve_time, '%m/%d/%Y %H:%M')
+              new_resolve_time = datetime.strftime(resolve_time, '%#m/%d/%Y %H:%M')
               #print("the orig resolve time is " , resolve_time)
               #print("The new resolved time is", new_resolve_time)
               #print("the new breached time is", new_breach_time)
@@ -338,7 +362,7 @@ with open (snow_file_path,'r') as snow_file:
               #print("the orig resolve time is " ,ticket, resolve_time)
               new_breach_time = datetime.strptime(breach_time, '%Y-%m-%d %H:%M:%S').strftime("%#m/%d/%Y %H:%M")
               resolve_time = datetime.strptime(resolve_time, '%m/%d/%Y %H:%M')
-              new_resolve_time = datetime.strftime(resolve_time, '%m/%d/%Y %H:%M')
+              new_resolve_time = datetime.strftime(resolve_time, '%#m/%d/%Y %H:%M')
               #print("the orig resolve time is " , resolve_time)
               #print("The new resolved time is", new_resolve_time)
               #print("the new breached time is", new_breach_time)
@@ -379,7 +403,7 @@ with open (snow_file_path,'r') as snow_file:
               #print("the orig resolve time is " ,ticket, resolve_time)
               new_breach_time = datetime.strptime(breach_time, '%Y-%m-%d %H:%M:%S').strftime("%#m/%d/%Y %H:%M")
               resolve_time = datetime.strptime(resolve_time, '%m/%d/%Y %H:%M')
-              new_resolve_time = datetime.strftime(resolve_time, '%m/%d/%Y %H:%M')
+              new_resolve_time = datetime.strftime(resolve_time, '%#m/%d/%Y %H:%M')
               #print("the orig resolve time is " , resolve_time)
               #print("The new resolved time is", new_resolve_time)
               #print("the new breached time is", new_breach_time)
@@ -420,7 +444,7 @@ with open (snow_file_path,'r') as snow_file:
               #print("the orig resolve time is " ,ticket, resolve_time)
               new_breach_time = datetime.strptime(breach_time, '%Y-%m-%d %H:%M:%S').strftime("%#m/%d/%Y %H:%M")
               resolve_time = datetime.strptime(resolve_time, '%m/%d/%Y %H:%M')
-              new_resolve_time = datetime.strftime(resolve_time, '%m/%d/%Y %H:%M')
+              new_resolve_time = datetime.strftime(resolve_time, '%#m/%d/%Y %H:%M')
               #print("the orig resolve time is " , resolve_time)
               #print("The new resolved time is", new_resolve_time)
               #print("the new breached time is", new_breach_time)
@@ -462,6 +486,7 @@ with open (sla_file_path,'a', newline='') as sla_file:
   writablefile = csv.writer(sla_file) 
   now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
   #print(now)
+  #lst=(now,P2_Percent_SLA,P3_Percent_SLA,val )
   lst=(now,P2_Percent_SLA,P3_Percent_SLA,P4_Percent_SLA,val )
   #print(lst)
   writablefile.writerow(lst)
@@ -478,3 +503,4 @@ print("P4 Tickets - ",p4_totals)
 print("The Percentage Of P2 Tickets That Met The SLA",P2_Percent_SLA)
 print("The Percentage Of P3 Tickets That Met The SLA",P3_Percent_SLA)
 print("The Percentage Of P4 Tickets That Met The SLA",P4_Percent_SLA)
+#added 1/18/2021
